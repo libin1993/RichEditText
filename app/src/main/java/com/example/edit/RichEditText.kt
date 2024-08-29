@@ -244,7 +244,8 @@ class RichEditText @JvmOverloads constructor(
                 run loop@{
                     topicArray.forEach {
                         if (it.topicBean.topic_id == topicBean.topic_id) {
-                            Toast.makeText(context, "你已经选择过该话题啦", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "你已经选择过该话题啦", Toast.LENGTH_SHORT)
+                                .show()
                             isContain = true
                             return@loop
                         }
@@ -257,13 +258,15 @@ class RichEditText @JvmOverloads constructor(
         }
 
         val index = selectionStart
-        text!!.insert(index, topicBean.topic_name)
-        text!!.setSpan(
+        val ssb = SpannableStringBuilder(text)
+        ssb.insert(index, topicBean.topic_name)
+        ssb.setSpan(
             TopicForegroundColorSpan(topicBean, mTopicColor),
             index,
             index + topicBean.topic_name.length,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
+        text = ssb
         setSelection(index + topicBean.topic_name.length)
     }
 
@@ -316,8 +319,9 @@ class RichEditText @JvmOverloads constructor(
         }
 
         val index = selectionStart
-        text!!.insert(index, "@${mentionUserBean.nick_name}")
-        text!!.setSpan(
+        val ssb = SpannableStringBuilder(text)
+        ssb.insert(index, "@${mentionUserBean.nick_name}")
+        ssb.setSpan(
             UserForegroundColorSpan(
                 mentionUserBean,
                 mUserColor
@@ -326,6 +330,7 @@ class RichEditText @JvmOverloads constructor(
             index + mentionUserBean.nick_name.length + 1,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
+        text = ssb
         setSelection(index + mentionUserBean.nick_name.length + 1)
     }
 
