@@ -9,6 +9,7 @@ import android.text.SpannableStringBuilder
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.view.inputmethod.InputConnectionWrapper
@@ -37,6 +38,7 @@ class RichEditText @JvmOverloads constructor(
     private var mLastSelectedRange: Range? = null
     private var mRangeArrayList: MutableList<Range>? = null
     private var isSelected: Boolean = false
+    private var mTouchY: Float = 0f//点击Y坐标
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.RichEditText).use { ta ->
@@ -90,6 +92,32 @@ class RichEditText @JvmOverloads constructor(
             }
         })
 
+    }
+
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                //按下时记录Y坐标位置，并请求父布局不要拦截事件
+                parent?.requestDisallowInterceptTouchEvent(true)
+                mTouchY = event.y
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                val nowY = event.y
+                //判断上下滚动方向，并判断是否滚动到边界
+                if (nowY > mTouchY) {
+                    parent?.requestDisallowInterceptTouchEvent(canScrollVertically(-1))
+                } else {
+                    parent?.requestDisallowInterceptTouchEvent(canScrollVertically(1))
+                }
+            }
+
+            else -> {
+                parent?.requestDisallowInterceptTouchEvent(false)
+            }
+        }
+        return super.onTouchEvent(event)
     }
 
 

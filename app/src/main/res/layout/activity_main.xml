@@ -22,7 +22,7 @@
             android:minHeight="120dp"
             android:textColor="@color/white"
             android:textColorHint="@color/graY"
-            app:richMaxLength="50"
+            app:richMaxLength="100"
             app:richTopicColor="@android:color/holo_red_dark"
             app:richTopicOnce="true"
             app:richUserColor="@android:color/holo_green_dark"
