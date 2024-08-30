@@ -458,7 +458,10 @@ class RichEditText @JvmOverloads constructor(
     private fun updateSpans(editable: Editable) {
         //reset state
         isSelected = false
-        mRangeArrayList?.clear()
+        if (!mRangeArrayList.isNullOrEmpty()){
+            mRangeArrayList?.clear()
+        }
+
         val topicArray = editable.getSpans(
             0, editable.length,
             TopicForegroundColorSpan::class.java
@@ -496,6 +499,9 @@ class RichEditText @JvmOverloads constructor(
                     editable.removeSpan(it)
                 }
             }
+        }
+        if (!mRangeArrayList.isNullOrEmpty()){
+            mRangeArrayList!!.sortBy { it.from }
         }
     }
 
