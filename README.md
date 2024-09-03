@@ -1,6 +1,6 @@
 
 
-## 类似抖音、小红书输入框，支持@相同名称用户、#话题
+## @相同名称用户、#话题输入框
 ## 参考 https://github.com/CarGuo/GSYRickText
 
 ## DEMO效果图
