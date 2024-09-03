@@ -137,7 +137,7 @@ class RichEditText @JvmOverloads constructor(
             return
         }
 
-        if (userList.isNullOrEmpty() || topicList.isNullOrEmpty()) {
+        if (userList.isNullOrEmpty() && topicList.isNullOrEmpty()) {
             setText(text)
         } else {
             val ssb = SpannableStringBuilder(text)
@@ -500,6 +500,7 @@ class RichEditText @JvmOverloads constructor(
                 }
             }
         }
+        //高亮排序
         if (!mRangeArrayList.isNullOrEmpty()){
             mRangeArrayList!!.sortBy { it.from }
         }
