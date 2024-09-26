@@ -15,7 +15,9 @@ class UserListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivityUserListBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val userList = mutableListOf<MentionUserBean>()
+        val userList = mutableListOf(
+            MentionUserBean("1", "1000")
+        )
         for (i in 0..100) {
             userList.add(MentionUserBean(i.toString(), i.toString()))
         }
@@ -36,7 +38,7 @@ class UserListActivity : AppCompatActivity() {
         finish()
     }
 
-    companion object{
+    companion object {
         const val DATA = "data"
     }
 

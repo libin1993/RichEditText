@@ -46,10 +46,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         mBinding.btnTopic.setOnClickListener(this)
         mBinding.btnContent.setOnClickListener(this)
         mBinding.etContent.initText(
-            "@1@嗨@3#1#哈#哼#2", mutableListOf(
-                TopicBean("#1", "1", 6, 8), TopicBean("#2", "2", 12, 14)
+            "@1 @1 @3 #1 #哈 #2 @啦", mutableListOf(
+                TopicBean("#1", "1", 9, 11),
+                TopicBean("#2", "2", 15, 17)
             ), mutableListOf(
-                MentionUserBean("1", "1", 0, 2), MentionUserBean("3", "3", 4, 6)
+                MentionUserBean("1", "1", 0, 2),
+                MentionUserBean("1", "1000", 3, 5),
+                MentionUserBean("3", "3", 6, 8)
             )
         )
     }

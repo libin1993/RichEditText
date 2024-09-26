@@ -7,5 +7,6 @@
         <attr name="richTopicColor" format="color" /> <!--话题高亮颜色-->
         <attr name="richUserOnce" format="boolean" /> <!--同一用户最多只能@一次-->
         <attr name="richTopicOnce" format="boolean" /> <!--同一话题最多只能选择一次-->
+        <attr name="richAddSpace" format="boolean" /> <!--添加话题、用户是否默认添加空格-->
     </declare-styleable>
 </resources>

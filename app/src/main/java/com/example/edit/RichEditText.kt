@@ -35,6 +35,7 @@ class RichEditText @JvmOverloads constructor(
     private var mUserColor: Int = 0 //用户颜色
     private var mTopicOnce = false //同一话题最多只能选择一次
     private var mUserOnce = true //同一用户最多只能@一次
+    private var mAddSpace = true //添加话题、用户是否默认添加空格
     private var mLastSelectedRange: Range? = null
     private var mRangeArrayList: MutableList<Range>? = null
     private var isSelected: Boolean = false
@@ -59,6 +60,7 @@ class RichEditText @JvmOverloads constructor(
                 R.styleable.RichEditText_richUserOnce,
                 true
             )
+            mAddSpace = ta.getBoolean(R.styleable.RichEditText_richAddSpace, true)
         }
         filters = arrayOf<InputFilter>(InputFilter.LengthFilter(mRichMaxLength))
         mRangeArrayList = mutableListOf()
@@ -216,9 +218,15 @@ class RichEditText @JvmOverloads constructor(
         if (topicBean == null) {
             return
         }
-        //校验输入字符数量
-        if (text.toString().length + topicBean.topic_name.length + if (insertByInput == true) {
+        val selectionIndex = selectionStart
+        val textLength = text.toString().length
+        //校验输入字符数量，光标在最后不校验空格
+        if (textLength + topicBean.topic_name.length + if (insertByInput == true) {
                 -1
+            } else {
+                0
+            } + if (mAddSpace && selectionIndex < textLength) {
+                1
             } else {
                 0
             } > mRichMaxLength
@@ -250,37 +258,50 @@ class RichEditText @JvmOverloads constructor(
                 }
             }
         }
-        val index = selectionStart
         val ssb = SpannableStringBuilder(text)
         ssb.insert(
-            index,
+            selectionIndex,
             if (insertByInput == true) {
-                topicBean.topic_name.substring(1)
+                if (mAddSpace) {
+                    "${topicBean.topic_name.substring(1)} "
+                } else {
+                    topicBean.topic_name.substring(1)
+                }
             } else {
-                topicBean.topic_name
+                if (mAddSpace) {
+                    "${topicBean.topic_name} "
+                } else {
+                    topicBean.topic_name
+                }
             }
         )
         ssb.setSpan(
             TopicForegroundColorSpan(topicBean, mTopicColor),
             if (insertByInput == true) {
-                index - 1
+                selectionIndex - 1
             } else {
-                index
+                selectionIndex
             },
             if (insertByInput == true) {
-                index - 1
+                selectionIndex - 1
             } else {
-                index
+                selectionIndex
             } + topicBean.topic_name.length,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
         text = ssb
         setSelection(
-            if (insertByInput == true) {
-                index - 1
-            } else {
-                index
-            } + topicBean.topic_name.length
+            text.toString().length.coerceAtMost(
+                if (insertByInput == true) {
+                    selectionIndex - 1
+                } else {
+                    selectionIndex
+                } + topicBean.topic_name.length + if (mAddSpace) {
+                    1
+                } else {
+                    0
+                }
+            )
         )
     }
 
@@ -293,11 +314,17 @@ class RichEditText @JvmOverloads constructor(
         if (mentionUserBean == null) {
             return
         }
-        //校验输入字符数量
-        if (text.toString().length + mentionUserBean.nick_name.length + if (insertByInput == true) {
+        val selectionIndex = selectionStart
+        val textLength = text.toString().length
+        //校验输入字符数量，光标在最后不校验空格
+        if (textLength + mentionUserBean.nick_name.length + if (insertByInput == true) {
                 0
             } else {
                 1
+            } + if (mAddSpace && selectionIndex < textLength) {
+                1
+            } else {
+                0
             } > mRichMaxLength
         ) {
             Toast.makeText(context, "最长可输入${mRichMaxLength}个字符", Toast.LENGTH_SHORT).show()
@@ -326,14 +353,21 @@ class RichEditText @JvmOverloads constructor(
             }
         }
 
-        val index = selectionStart
         val ssb = SpannableStringBuilder(text)
         ssb.insert(
-            index,
+            selectionIndex,
             if (insertByInput == true) {
-                mentionUserBean.nick_name
+                if (mAddSpace) {
+                    "${mentionUserBean.nick_name} "
+                } else {
+                    mentionUserBean.nick_name
+                }
             } else {
-                "@${mentionUserBean.nick_name}"
+                if (mAddSpace) {
+                    "@${mentionUserBean.nick_name} "
+                } else {
+                    "@${mentionUserBean.nick_name}"
+                }
             }
         )
         ssb.setSpan(
@@ -342,23 +376,29 @@ class RichEditText @JvmOverloads constructor(
                 mUserColor
             ),
             if (insertByInput == true) {
-                index - 1
+                selectionIndex - 1
             } else {
-                index
+                selectionIndex
             }, if (insertByInput == true) {
-                index
+                selectionIndex
             } else {
-                index + 1
+                selectionIndex + 1
             } + mentionUserBean.nick_name.length,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
         text = ssb
         setSelection(
-            if (insertByInput == true) {
-                index
-            } else {
-                index + 1
-            } + mentionUserBean.nick_name.length
+            text.toString().length.coerceAtMost(
+                if (insertByInput == true) {
+                    selectionIndex
+                } else {
+                    selectionIndex + 1
+                } + mentionUserBean.nick_name.length + if (mAddSpace) {
+                    1
+                } else {
+                    0
+                }
+            )
         )
     }
 
