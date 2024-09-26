@@ -291,7 +291,7 @@ class RichEditText @JvmOverloads constructor(
             return
         }
         val curString = text.toString()
-        if (curString.length + mentionUserBean.nick_name.length + 2 > mRichMaxLength) {
+        if (curString.length + mentionUserBean.nick_name.length + 1 > mRichMaxLength) {
             Toast.makeText(context, "最长可输入${mRichMaxLength}个字符", Toast.LENGTH_SHORT).show()
             return
         }
