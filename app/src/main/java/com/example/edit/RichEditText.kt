@@ -213,22 +213,16 @@ class RichEditText @JvmOverloads constructor(
      * @param insertByInput 是否输入#插入话题
      */
     fun insertTopic(topicBean: TopicBean?, insertByInput: Boolean? = false) {
-        //先移除#
-        if (insertByInput == true) {
-            if (selectionEnd == 0) {
-                text!!.delete(0, 1)
-            } else {
-                val index = text.toString().indexOf("#", selectionEnd - 1)
-                if (index != -1) {
-                    text!!.delete(index, index + 1)
-                }
-            }
-        }
         if (topicBean == null) {
             return
         }
-        val curString = text.toString()
-        if (curString.length + topicBean.topic_name.length > mRichMaxLength) {
+        //校验输入字符数量
+        if (text.toString().length + topicBean.topic_name.length + if (insertByInput == true) {
+                -1
+            } else {
+                0
+            } > mRichMaxLength
+        ) {
             Toast.makeText(context, "最长可输入${mRichMaxLength}个字符", Toast.LENGTH_SHORT).show()
             return
         }
@@ -256,18 +250,38 @@ class RichEditText @JvmOverloads constructor(
                 }
             }
         }
-
         val index = selectionStart
         val ssb = SpannableStringBuilder(text)
-        ssb.insert(index, topicBean.topic_name)
+        ssb.insert(
+            index,
+            if (insertByInput == true) {
+                topicBean.topic_name.substring(1)
+            } else {
+                topicBean.topic_name
+            }
+        )
         ssb.setSpan(
             TopicForegroundColorSpan(topicBean, mTopicColor),
-            index,
-            index + topicBean.topic_name.length,
+            if (insertByInput == true) {
+                index - 1
+            } else {
+                index
+            },
+            if (insertByInput == true) {
+                index - 1
+            } else {
+                index
+            } + topicBean.topic_name.length,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
         text = ssb
-        setSelection(index + topicBean.topic_name.length)
+        setSelection(
+            if (insertByInput == true) {
+                index - 1
+            } else {
+                index
+            } + topicBean.topic_name.length
+        )
     }
 
     /**
@@ -276,22 +290,16 @@ class RichEditText @JvmOverloads constructor(
      * @param insertByInput 是否输入@插入用户
      */
     fun insertUser(mentionUserBean: MentionUserBean?, insertByInput: Boolean? = false) {
-        if (insertByInput == true) {
-            if (selectionEnd == 0) {
-                text!!.delete(0, 1)
-            } else {
-                val index = text.toString().indexOf("@", selectionEnd - 1)
-                if (index != -1) {
-                    text!!.delete(index, index + 1)
-                }
-            }
-        }
-
         if (mentionUserBean == null) {
             return
         }
-        val curString = text.toString()
-        if (curString.length + mentionUserBean.nick_name.length + 1 > mRichMaxLength) {
+        //校验输入字符数量
+        if (text.toString().length + mentionUserBean.nick_name.length + if (insertByInput == true) {
+                0
+            } else {
+                1
+            } > mRichMaxLength
+        ) {
             Toast.makeText(context, "最长可输入${mRichMaxLength}个字符", Toast.LENGTH_SHORT).show()
             return
         }
@@ -320,18 +328,38 @@ class RichEditText @JvmOverloads constructor(
 
         val index = selectionStart
         val ssb = SpannableStringBuilder(text)
-        ssb.insert(index, "@${mentionUserBean.nick_name}")
+        ssb.insert(
+            index,
+            if (insertByInput == true) {
+                mentionUserBean.nick_name
+            } else {
+                "@${mentionUserBean.nick_name}"
+            }
+        )
         ssb.setSpan(
             UserForegroundColorSpan(
                 mentionUserBean,
                 mUserColor
             ),
-            index,
-            index + mentionUserBean.nick_name.length + 1,
+            if (insertByInput == true) {
+                index - 1
+            } else {
+                index
+            }, if (insertByInput == true) {
+                index
+            } else {
+                index + 1
+            } + mentionUserBean.nick_name.length,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
         text = ssb
-        setSelection(index + mentionUserBean.nick_name.length + 1)
+        setSelection(
+            if (insertByInput == true) {
+                index
+            } else {
+                index + 1
+            } + mentionUserBean.nick_name.length
+        )
     }
 
 
@@ -458,7 +486,7 @@ class RichEditText @JvmOverloads constructor(
     private fun updateSpans(editable: Editable) {
         //reset state
         isSelected = false
-        if (!mRangeArrayList.isNullOrEmpty()){
+        if (!mRangeArrayList.isNullOrEmpty()) {
             mRangeArrayList?.clear()
         }
 
@@ -501,7 +529,7 @@ class RichEditText @JvmOverloads constructor(
             }
         }
         //高亮排序
-        if (!mRangeArrayList.isNullOrEmpty()){
+        if (!mRangeArrayList.isNullOrEmpty()) {
             mRangeArrayList!!.sortBy { it.from }
         }
     }
